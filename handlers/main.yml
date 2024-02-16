@@ -1,0 +1,5 @@
+---
+- name: "restart consul_exporter"
+  ansible.builtin.service:
+    name: "consul_exporter"
+    state: "restarted"
