@@ -1,6 +1,6 @@
 ---
 # Binary install
-consul_exporter_version: "0.11.0"
+consul_exporter_version: "0.13.0"
 consul_exporter_tgz: "consul_exporter-{{ consul_exporter_version }}.linux-amd64.tar.gz"
 consul_exporter_tgz_url: "https://github.com/prometheus/consul_exporter/releases/download/v{{ consul_exporter_version }}/{{ consul_exporter_tgz }}"
 consul_exporter_temp_dir: "/tmp"
@@ -8,4 +8,5 @@ consul_exporter_install_dir: "/usr/local/bin"
 consul_exporter_force_install: false
 
 # Systemd options
-consul_exporter_systemd_options: "--consul.server=127.0.0.1:8500 --consul.allow_stale --consul.health-summary"
+consul_exporter_port: "9106"
+consul_exporter_flags: "--consul.agent-only"
