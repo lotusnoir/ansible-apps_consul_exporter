@@ -1,15 +1,14 @@
 {{ ansible_managed | comment }}
 
 [Unit]
-Description=Prometheus Kafka Exporter
+Description=Prometheus Consul Exporter
 After=network-online.target
 StartLimitInterval=0
 
 [Service]
 Type=simple
 Restart=always
-ExecStart={{ consul_exporter_install_dir }}/consul_exporter \
-          --web.listen-address=:{{ consul_exporter_port }} {{ consul_exporter_flags }}
+ExecStart={{ consul_exporter_install_dir }}/consul_exporter --web.listen-address=:{{ consul_exporter_port }} {{ consul_exporter_flags }}
 ExecReload=/bin/kill -HUP $MAINPID
 SyslogIdentifier=consul_exporter
 RestartSec=1
