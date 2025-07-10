@@ -21,7 +21,11 @@
 
 ## Description
 
-Install and configure consul exporter
+Deploy [consul_exporter](https://github.com/prometheus/consul_exporter/) to expose consul metrics to prometheus.
+
+install time with src = 1/run 23.33s - 2/run 8.03s 
+
+
 ## Requirements
 
 none
@@ -40,6 +44,9 @@ See [variables](/defaults/main.yml) for more details.
           roles:
             - role: ansible-apps_consul_exporter
 
+## Grafana Dashboard
+
+You can find a grafana dashboard [here](https://grafana.com/grafana/dashboards/)
 
 ## License
 

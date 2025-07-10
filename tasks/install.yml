@@ -1,64 +1,27 @@
 ---
-- name: "Check for consul_exporter binary"
+- name: "Check for binary"
   ansible.builtin.stat:
-    path: '{{ consul_exporter_install_dir }}/consul_exporter'
+    path: "{{ consul_exporter_install_dir }}/{{ consul_exporter_bin_name }}"
   changed_when: false
-  register: consul_exporter_install
+  register: __installed_bin
 
-- name: "Install tasks"
-  when: not consul_exporter_install.stat.exists or consul_exporter_force_install|bool
-  block:
-    - name: "Install requierements"
-      ansible.builtin.package:
-        name: ["ca-certificates", "unzip", "tar"]
-        state: present
+- name: "Sources install tasks"
+  ansible.builtin.include_tasks: install_src.yml
+  when: consul_exporter_install_method == "src"
 
-    - name: "Download consul_exporter..."
-      ansible.builtin.get_url:
-        url: '{{ consul_exporter_tgz_url }}'
-        dest: '{{ consul_exporter_temp_dir }}/{{ consul_exporter_tgz }}'
-        timeout: '60'
-        mode: '0644'
-
-    - name: "Ensure install dir exists"
-      ansible.builtin.file:
-        path: '{{ item }}'
-        state: directory
-        mode: '0755'
-      with_items:
-        - '{{ consul_exporter_install_dir }}'
-        - '{{ consul_exporter_temp_dir }}/consul_exporter'
-
-    - name: "Unarchive consul_exporter..."
-      ansible.builtin.unarchive:
-        src: '{{ consul_exporter_temp_dir }}/{{ consul_exporter_tgz }}'
-        dest: '{{ consul_exporter_temp_dir }}/consul_exporter'
-        extra_opts: [--strip-components=1]
-        remote_src: true
-        mode: '0644'
-
-    - name: "Copy consul_exporter binary..."
-      ansible.builtin.copy:
-        src: '{{ consul_exporter_temp_dir }}/consul_exporter/consul_exporter'
-        dest: '{{ consul_exporter_install_dir }}/consul_exporter'
-        remote_src: true
-        mode: '0755'
-
-    - name: "Remove temporary directory"
-      ansible.builtin.file:
-        path: '{{ consul_exporter_temp_dir }}/consul_exporter'
-        state: absent
-
-- name: "Create systemd for consul_exporter"
+- name: "Configuring systemd"
   ansible.builtin.template:
-    src: 'consul_exporter.service.j2'
-    dest: '/etc/systemd/system/consul_exporter.service'
-    mode: '0644'
+    src: consul_exporter.service.j2
+    dest: "/lib/systemd/system/consul_exporter.service"
+    owner: "{{ consul_exporter_user }}"
+    group: "{{ consul_exporter_group }}"
+    mode: "0644"
   notify: "Restart consul_exporter"
 
-- name: "Start consul_exporter.service"
+- name: "Start service"
   ansible.builtin.service:
     name: consul_exporter
     state: started
     enabled: true
     daemon_reload: true
+  when: consul_exporter_start_service
