@@ -17,6 +17,7 @@
     group: "{{ consul_exporter_group }}"
     mode: "0644"
   notify: "Restart consul_exporter"
+  register: __config_systemd
 
 - name: "Start service"
   ansible.builtin.service:
@@ -24,4 +25,6 @@
     state: started
     enabled: true
     daemon_reload: true
-  when: consul_exporter_start_service
+  when:
+    - consul_exporter_start_service
+    - __config_systemd.changed

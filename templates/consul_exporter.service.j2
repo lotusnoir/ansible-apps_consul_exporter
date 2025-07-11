@@ -8,7 +8,7 @@ StartLimitInterval=0
 [Service]
 User={{ consul_exporter_user }}
 Group={{ consul_exporter_group }}
-ExecStart={{ consul_exporter_install_dir }}/{{ consul_exporter_bin_name }} --web.listen-address=:{{ consul_exporter_port }} {{ consul_exporter_flags }}
+ExecStart={{ consul_exporter_install_dir }}/{% if consul_exporter_symlink_name | length > 0 or consul_exporter_symlink_name != consul_exporter_bin_name %}{{ consul_exporter_symlink_name }}{% else %}{{ consul_exporter_bin_name }}{% endif %} --web.listen-address=:{{ consul_exporter_port }} {{ consul_exporter_flags }}
 ExecReload=/bin/kill -HUP $MAINPID
 
 Type=simple
