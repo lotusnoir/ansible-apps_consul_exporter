@@ -23,10 +23,6 @@ consul_exporter_temp_dir: "/tmp"
 # if consul_exporter_install_origin: local
 consul_exporter_local_files: "~/Downloads/shared-files/{{ role_path | basename }}/{{ consul_exporter_pkg_name }}"
 
-# where is installed binary
-# if you decide to use consul_exporter_bin_name: with version you can create a symlink to have multiple version installed. empty or same as bin_name = no symlink
-consul_exporter_symlink_name: "{{ consul_exporter_bin_name }}"
-
 ### Config
 consul_exporter_port: "9106"
 consul_exporter_flags: "--consul.agent-only"

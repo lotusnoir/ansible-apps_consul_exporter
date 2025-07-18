@@ -13,8 +13,8 @@
   ansible.builtin.template:
     src: consul_exporter.service.j2
     dest: "/lib/systemd/system/consul_exporter.service"
-    owner: "{{ consul_exporter_user }}"
-    group: "{{ consul_exporter_group }}"
+    owner: root
+    group: root
     mode: "0644"
   notify: "Restart consul_exporter"
   register: __config_systemd

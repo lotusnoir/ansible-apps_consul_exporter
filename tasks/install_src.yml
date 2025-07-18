@@ -90,12 +90,3 @@
         group: "{{ consul_exporter_group }}"
         mode: "0755"
       notify: Restart consul_exporter
-
-    - name: "Create symlink to current version"
-      ansible.builtin.file:
-        src: "{{ consul_exporter_install_dir }}/{{ consul_exporter_bin_name }}"
-        dest: "{{ consul_exporter_symlink_name }}"
-        state: link
-        force: true
-      notify: Restart consul_exporter
-      when: consul_exporter_symlink_name is defined and (consul_exporter_symlink_name | length > 0 or consul_exporter_symlink_name != consul_exporter_bin_name)

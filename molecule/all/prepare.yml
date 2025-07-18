@@ -3,12 +3,22 @@
   hosts: all
   gather_facts: true
   pre_tasks:
+    - name: Replace active repositories with archive URLs
+      ansible.builtin.replace:
+        path: /etc/apt/sources.list
+        regexp: 'http://(deb|security)\.debian\.org'
+        replace: 'http://archive.debian.org'
+      when: ansible_os_family == 'Debian' and ansible_distribution_release == 'buster'
+
     - name: Update apt cache.
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 600
+      register: apt_update
+      until: apt_update is succeeded
+      retries: 3
+      delay: 10
       when: ansible_os_family == 'Debian'
-      changed_when: false
 
     - name: Start dbus for oraclelinux9
       ansible.builtin.systemd:
