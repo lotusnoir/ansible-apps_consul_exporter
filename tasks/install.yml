@@ -12,7 +12,7 @@
 - name: "Configuring systemd"
   ansible.builtin.template:
     src: consul_exporter.service.j2
-    dest: "/lib/systemd/system/consul_exporter.service"
+    dest: "/etc/systemd/system/consul_exporter.service"
     owner: root
     group: root
     mode: "0644"
