@@ -5,6 +5,10 @@
   changed_when: false
   register: __installed_bin
 
+- name: "Create user"
+  ansible.builtin.include_tasks: create_user.yml
+  when: consul_exporter_user != "root"
+
 - name: "Sources install tasks"
   ansible.builtin.include_tasks: install_src.yml
   when: consul_exporter_install_method == "src"
