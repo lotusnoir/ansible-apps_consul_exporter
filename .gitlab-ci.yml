@@ -12,102 +12,78 @@ variables:
 ######################################################
 # DEFINE CHANGES RULES
 ######################################################
-.molecule_rules:
+.molecule_job_template: &molecule_job_template
+  stage: molecule
+  image: lotusnoir/molecule_play:latest
   rules:
+    # Exécuter uniquement si un fichier pertinent change
     - changes:
         - "defaults/**"
         - "files/**"
         - "handlers/**"
         - "meta/**"
-        - "molecule/**"
         - "tasks/**"
         - "templates/**"
         - "vars/**"
-        - "!**/.ansible-lint"
-        - "!**/CHANGELOG.md"
-        - "!**/CODE_OF_CONDUCT.md"
-        - "!**/.gitignore"
-        - "!**/.gitlab-ci.yml"
-        - "!**/LICENSE"
-        - "!**/.pre-commit-config.yaml"
-        - "!**/README.md"
-        - "!**/.yamllint"
+        - "molecule/*/**"   # Inclut tous les fichiers dans chaque scenario
+        - "molecule/*"      # Inclut le scenario lui-même (utile pour playbook.yml)
+    - when: never           # Sinon, ne pas exécuter
 
 ######################################################
 # RUN MOLECULE FOR EACH DISTRIB
 ######################################################
 molecule_debian12:
-  stage: molecule
-  image: lotusnoir/molecule_play:latest
-  extends: .molecule_rules
+  <<: *molecule_job_template
   script:
     - MOLECULE_DISTRIB=debian12 molecule test
 molecule_debian11:
-  stage: molecule
-  image: lotusnoir/molecule_play:latest
-  extends: .molecule_rules
+  <<: *molecule_job_template
   script:
     - MOLECULE_DISTRIB=debian11 molecule test
 molecule_debian10:
-  stage: molecule
+  <<: *molecule_job_template
   image: lotusnoir/molecule_play:v2.0.0
-  extends: .molecule_rules
   script:
     - MOLECULE_DISTRIB=debian10 molecule test
 molecule_oraclelinux8:
-  stage: molecule
+  <<: *molecule_job_template
   image: lotusnoir/molecule_play:v2.0.0
-  extends: .molecule_rules
   script:
     - MOLECULE_DISTRIB=oraclelinux8 molecule test
 molecule_oraclelinux9:
-  stage: molecule
-  image: lotusnoir/molecule_play:latest
-  extends: .molecule_rules
+  <<: *molecule_job_template
   script:
     - MOLECULE_DISTRIB=oraclelinux9 molecule test
 molecule_redhat8:
-  stage: molecule
+  <<: *molecule_job_template
   image: lotusnoir/molecule_play:v2.0.0
-  extends: .molecule_rules
   script:
     - MOLECULE_DISTRIB=redhat8 molecule test
 molecule_redhat9:
-  stage: molecule
-  image: lotusnoir/molecule_play:latest
-  extends: .molecule_rules
+  <<: *molecule_job_template
   script:
     - MOLECULE_DISTRIB=redhat9 molecule test
 molecule_rocky8:
-  stage: molecule
+  <<: *molecule_job_template
   image: lotusnoir/molecule_play:v2.0.0
-  extends: .molecule_rules
   script:
     - MOLECULE_DISTRIB=rocky8 molecule test
 molecule_rocky9:
-  stage: molecule
-  image: lotusnoir/molecule_play:latest
-  extends: .molecule_rules
+  <<: *molecule_job_template
   script:
     - MOLECULE_DISTRIB=rocky9 molecule test
 molecule_ubuntu20:
-  stage: molecule
-  image: lotusnoir/molecule_play:latest
+  <<: *molecule_job_template
   variables:
     MOLECULE_DOCKER_COMMAND: "--cap-add NET_ADMIN"
-  extends: .molecule_rules
   script:
     - MOLECULE_DISTRIB=ubuntu20 molecule test
 molecule_ubuntu22:
-  stage: molecule
-  image: lotusnoir/molecule_play:latest
-  extends: .molecule_rules
+  <<: *molecule_job_template
   script:
     - MOLECULE_DISTRIB=ubuntu22 molecule test
 molecule_ubuntu24:
-  stage: molecule
-  image: lotusnoir/molecule_play:latest
-  extends: .molecule_rules
+  <<: *molecule_job_template
   script:
     - MOLECULE_DISTRIB=ubuntu24 molecule test
 
@@ -213,11 +189,16 @@ push_src_on_github:
     - git config --global init.defaultBranch main
     - COMMENT=$(git log -1 --pretty=%B | head -1)
   script:
+    - if grep -q "^skip" CHANGELOG.md 2>/dev/null; then
+        echo "⚠️  Changelog marqué 'skip' — aucun push GitHub effectué.";
+        exit 0;
+      fi
     - git clone git@github.com:${GITHUB_USER}/ansible-apps_consul_exporter.git /tmp/ansible-apps_consul_exporter
     - find /tmp/ansible-apps_consul_exporter -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf "{}" +;
     - rm -rf .git
     - cp -r . /tmp/ansible-apps_consul_exporter/
     - cd /tmp/ansible-apps_consul_exporter
     - git add -A
+    # - git diff --quiet && echo "✅ Aucun changement à pousser." && exit 0
     - git commit -m "${COMMENT}" || echo "No changes, nothing to commit!"
     - git push --follow-tags
