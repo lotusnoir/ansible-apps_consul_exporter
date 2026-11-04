@@ -144,7 +144,7 @@ vars:
 
 ## Grafana Dashboard
 
-You can find a Grafana dashboard [here](https://grafana.com/grafana/dashboards/)
+You can find a Grafana dashboard [here](https://grafana.com/grafana/dashboards/13693)
 
 ## License
 
