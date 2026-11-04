@@ -23,6 +23,7 @@ scenario:
 platforms:
   - name: apps-consul-exporter-redhat9
     image: lotusnoir/ansible_molecule_test_images:redhat9
+    pull: false
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     pre_build_image: true

@@ -23,6 +23,7 @@ scenario:
 platforms:
   - name: apps-consul-exporter-oraclelinux8
     image: lotusnoir/ansible_molecule_test_images:oraclelinux8
+    pull: false
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     pre_build_image: true

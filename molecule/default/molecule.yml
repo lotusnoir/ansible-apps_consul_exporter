@@ -21,8 +21,9 @@ scenario:
     - destroy
 
 platforms:
-  - name: apps-consul-exporter-${MOLECULE_DISTRIB:-debian12}
-    image: lotusnoir/ansible_molecule_test_images:${MOLECULE_DISTRIB:-debian12}
+  - name: apps-consul-exporter-${MOLECULE_DISTRIB:-debian13}
+    image: lotusnoir/ansible_molecule_test_images:${MOLECULE_DISTRIB:-debian13}
+    pull: false
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     pre_build_image: true

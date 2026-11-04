@@ -23,6 +23,7 @@ scenario:
 platforms:
   - name: apps-consul-exporter-ubuntu22
     image: lotusnoir/ansible_molecule_test_images:ubuntu22
+    pull: false
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     pre_build_image: true
